@@ -3,7 +3,7 @@ import textfsm
 import tempfile
 import pandas as pd
 
-selx = input("Select Jump Host. X or Y) #Establishes a set amount of jump hosts to connect to
+selx = input("Select Jump Host. X or Y") #Establishes a set amount of jump hosts to connect to
 if selx.lower() == 'x': 
   ip = "" #Set ip variable equal to the IP of a Jump Host
 elif selx.lower() == 'y': 
@@ -15,7 +15,7 @@ un1 = input("Enter Target Device Username")
 pw1 = input("Enter Target Device Password")
 
 
-template_juniper_junos_show_interfaces = '''Value Required INTERFACE (\S+) #Declare template for textfsm usage
+template_juniper_junos_show_interfaces = '''Value Required INTERFACE (\S+) #Declare template for textfsm usage. Template drawn from NTC-Templates
 Value LINK_STATUS (\w+)
 Value ADMIN_STATE (\S+)
 Value HARDWARE_TYPE (\S+)

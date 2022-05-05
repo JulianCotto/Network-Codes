@@ -14,8 +14,13 @@ ip1 = input("Enter Target Device IP")
 un1 = input("Enter Target Device Username")
 pw1 = input("Enter Target Device Password")
 
+<<<<<<< HEAD:Juniper Nested SSH + Show Interfaces Descriptions + Export To Excel/SSH_Project.py
 #Declare template for textfsm usage. Template drawn from NTC-Templates
 template_juniper_junos_show_interfaces = '''Value Required INTERFACE (\S+)
+=======
+
+template_juniper_junos_show_interfaces = '''Value Required INTERFACE (\S+) #Declare template for textfsm usage. Template drawn from NTC-Templates
+>>>>>>> 21847207261096dad50601e2e7c82f680bb3b9d0:Nested SSH + Show Interfaces Descriptions + Export To Excel/SSH_Project.py
 Value LINK_STATUS (\w+)
 Value ADMIN_STATE (\S+)
 Value HARDWARE_TYPE (\S+)
@@ -78,7 +83,10 @@ parsed_t0 = parse_textfsm(template = template_juniper_junos_show_interfaces, out
 
 df = pd.DataFrame(parsed_t0) #Infromation that was parsed through TextFSM is passed to Pandas for export to Excel
 df.to_excel("MXOutput.xlsx", index=False) #Export to Excel
+<<<<<<< HEAD:Juniper Nested SSH + Show Interfaces Descriptions + Export To Excel/SSH_Project.py
 
+=======
+>>>>>>> 21847207261096dad50601e2e7c82f680bb3b9d0:Nested SSH + Show Interfaces Descriptions + Export To Excel/SSH_Project.py
 
 
 

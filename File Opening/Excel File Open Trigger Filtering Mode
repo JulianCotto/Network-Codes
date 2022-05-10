@@ -1,0 +1,14 @@
+file = "file_name.xlsx"
+os.startfile(file)
+
+keyboard = Controller()
+key = Key.ctrl
+key1 = Key.shift
+key2 = "l"
+
+keyboard.press(key)
+keyboard.press(key1)
+keyboard.press(key2)
+keyboard.release(key2)
+keyboard.release(key1)
+keyboard.release(key)

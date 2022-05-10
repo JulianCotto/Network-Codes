@@ -1,7 +1,0 @@
-Value Required INTERFACE (\S+)
-Value Required STATUS (up|down|admin-down)
-Value Required PROTOCOL (up|down|admin-down)
-Value Required DESCRIPTION (.*)
-
-Start
-  ^${INTERFACE}\s+${STATUS}\s+${PROTOCOL}\s${DESCRIPTION} -> Record

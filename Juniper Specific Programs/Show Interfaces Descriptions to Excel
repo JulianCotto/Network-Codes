@@ -1,0 +1,96 @@
+import paramiko
+import textfsm
+import tempfile
+import maskpass
+import pandas as pd
+import os
+from pynput.keyboard import Key, Controller
+
+
+selx = input("Tampa or Sparta Shiva? 'T' or 'S'")  
+if selx.lower() == 't':
+  ip = "JumpHost Option 1"
+elif selx.lower() == 's':
+  ip =  "JumpHost Option 2" 
+un = input("Enter JumpServer Username")
+pw = maskpass.askpass("Enter JumpServer Password")
+ip1 = input("Enter Target Device IP")
+un1 = input("Enter Target Device Username")
+pw1 = maskpass.askpass("Enter Target Device Password")
+
+
+
+template_juniper_junos_show_interfaces_descriptions = '''Value Required INTERFACE (\S+)
+Value Required ADMIN (up|down)
+Value Required LINK (up|down)
+Value Required DESCRIPTION (.*)
+
+Start
+  ^${INTERFACE}\s+${ADMIN}\s+${LINK}\s${DESCRIPTION} -> Record
+'''
+
+def parse_textfsm(template, output):
+    tmp = tempfile.NamedTemporaryFile(delete=False)
+    with open(tmp.name, "w") as f:
+        f.write(template)
+
+    with open(tmp.name, "r") as f:
+        fsm = textfsm.TextFSM(f)
+        fsm_results = fsm.ParseText(output)
+        parsed = [dict(zip(fsm.header, row))for row in fsm_results]
+
+    return parsed
+
+def cmd(command):      
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(ip, username=un, password=pw)
+
+    vmtransport = ssh.get_transport()
+    dest_addr = (ip1, 22)
+    local_addr = (ip, 22)
+    vmchannel = vmtransport.open_channel("direct-tcpip", dest_addr, local_addr)
+
+    sh1 = paramiko.SSHClient()
+    sh1.set_missing_host_key_policy(paramiko.AutoAddPolicy)
+    sh1.connect(ip1, username = un1, password = pw1, sock=vmchannel)
+
+    stdin, stdout, stderr = sh1.exec_command(command)
+    stdin.close()
+    output = stdout.read()
+    output_err = stderr.read()
+
+    ssh.close()
+    sh1.close()
+
+    if output_err:
+        return output_err.decode('utf-8')
+    else:
+        return output.decode('utf-8')
+
+
+output_t0 = cmd(command = 'show interfaces descriptions')
+parsed_t0 = parse_textfsm(template = template_juniper_junos_show_interfaces_descriptions, output = output_t0)
+
+df = pd.DataFrame(parsed_t0)
+
+
+df_style = df.style\
+  .applymap(lambda x: 'background-color: %s' % 'tomato' if x == "down" else 'background-color: %s' % 'palegreen' , subset=['ADMIN'])\
+    .applymap(lambda x: 'background-color: %s' % 'tomato' if x == "down" else 'background-color: %s' % 'palegreen' , subset=['LINK'])\
+      .to_excel("MXOutput.xlsx", index = False)
+
+file = "MXOutput.xlsx"
+os.startfile(file)
+
+keyboard = Controller()
+key = Key.ctrl
+key1 = Key.shift
+key2 = "l"
+
+keyboard.press(key)
+keyboard.press(key1)
+keyboard.press(key2)
+keyboard.release(key2)
+keyboard.release(key1)
+keyboard.release(key)

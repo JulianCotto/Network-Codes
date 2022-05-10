@@ -1,0 +1,26 @@
+def cmd(command):      
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(ip, username=un, password=pw)
+
+    vmtransport = ssh.get_transport()
+    dest_addr = (ip1, 22)
+    local_addr = (ip, 22)
+    vmchannel = vmtransport.open_channel("direct-tcpip", dest_addr, local_addr)
+
+    sh1 = paramiko.SSHClient()
+    sh1.set_missing_host_key_policy(paramiko.AutoAddPolicy)
+    sh1.connect(ip1, username = un1, password = pw1, sock=vmchannel)
+
+    stdin, stdout, stderr = sh1.exec_command(command)
+    stdin.close()
+    output = stdout.read()
+    output_err = stderr.read()
+
+    ssh.close()
+    sh1.close()
+
+    if output_err:
+        return output_err.decode('utf-8')
+    else:
+        return output.decode('utf-8')

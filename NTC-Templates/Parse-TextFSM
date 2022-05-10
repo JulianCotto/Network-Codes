@@ -1,0 +1,11 @@
+def parse_textfsm(template, output):
+    tmp = tempfile.NamedTemporaryFile(delete=False)
+    with open(tmp.name, "w") as f:
+        f.write(template)
+
+    with open(tmp.name, "r") as f:
+        fsm = textfsm.TextFSM(f)
+        fsm_results = fsm.ParseText(output)
+        parsed = [dict(zip(fsm.header, row))for row in fsm_results]
+
+    return parsed

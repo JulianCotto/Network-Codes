@@ -1,0 +1,7 @@
+Value Required INTERFACE (\S+)
+Value Required ADMIN (up|down)
+Value Required LINK (up|down)
+Value Required DESCRIPTION (.*)
+
+Start
+  ^${INTERFACE}\s+${ADMIN}\s+${LINK}\s${DESCRIPTION} -> Record
